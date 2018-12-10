@@ -12,7 +12,16 @@ public class SoundHandler {
 	private FFT fft;
 	private AudioInput lineIn;
 	
-	private float desiredSpec = 0.02f;
+	/* Bit rate 44,800 bits / 2 channels = 22,400Hz per channel
+	 * Highest frequency 22,400Hz
+	 * Fire alarm activation range 2,500Hz to 3,500Hz
+	 * Size of range is 1,000Hz
+	 * Percentage size desired is 1,000Hz / 22,400Hz = desiredSpec
+	 * Percentage before desired is 2,500Hz / 22,400Hz = beforeSpec
+	 * Desired isn't exactly desired so multiplying by 2
+	 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*/
+	public final float desiredSpec = 0.0892857142857142f;
+	public final float beforeSpec = 0.1116071428571429f;
 	
 	public SoundHandler(PApplet app) {
 		minim = new Minim(app);
@@ -36,7 +45,7 @@ public class SoundHandler {
 	public float getBandsComb() {
 		fft.forward(lineIn.mix);
 		float comb = 0;
-		for (int i=0; i < fft.specSize() * desiredSpec; i++) {
+		for (int i=0; i < fft.specSize(); i++) {
 			comb += fft.getBand(i);
 		}
 		return comb;
